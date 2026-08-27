@@ -1,0 +1,25 @@
+# Template file for 'hyprdynamicmonitors'
+pkgname=hyprdynamicmonitors
+version=1.4.0
+revision=1
+build_style=go
+go_import_path=github.com/fiffeek/hyprdynamicmonitors
+make_check_args="-skip=TestLidDetector_Integration|TestPowerDetector_Integration|Test__Preview/preview_lid_tui|Test__Preview/preview_lid_events|Test__Preview/preview_power_events"
+short_desc="Dynamic monitor configuration tool for Hyprland"
+maintainer="Muransk <mehtimuseib@gmail.com>"
+license="MIT"
+homepage="https://github.com/fiffeek/hyprdynamicmonitors"
+distfiles="https://github.com/fiffeek/hyprdynamicmonitors/archive/refs/tags/v${version}.tar.gz"
+checksum=93ba3920214b17e33003354717b0051faee50939dfae62d99979fcb26f69c470
+
+
+post_install() {
+	vlicense LICENSE
+}
+
+do_check() {
+	mkdir -p ./dist
+	go build -v -cover -covermode count -o ./dist/hdmtest ./main.go
+	HDM_BINARY_PATH=./dist/hdmtest go test -p "$XBPS_MAKEJOBS" -tags "${go_build_tags}" -ldflags "${go_ldflags}" ${make_check_args} ${make_check_target}
+}
+
